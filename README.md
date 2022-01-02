@@ -1,0 +1,1 @@
+# open-monster-registry
