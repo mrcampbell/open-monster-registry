@@ -33,6 +33,9 @@ Where silo'd solutions have silo'd distrubution channels (executables, ROM, WebA
 
 Rather than lists of obscure tools, we could create a WebUI Interface, where it's nearly drag and drop, with the allowance of pluggable custom code (Javascript for example), and wrap around already existing opensource libraries to create installable apps, ROM formatted, or distribute through WebApp.
 
+# Legal
+
+We need to ensure that this can be used for fun, and for profit, and do not collide with any Intellectual Property or other Trademark/Copyright licensing.
 
 ## Who am I?
 
