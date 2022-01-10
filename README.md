@@ -33,6 +33,12 @@ Where silo'd solutions have silo'd distrubution channels (executables, ROM, WebA
 
 Rather than lists of obscure tools, we could create a WebUI Interface, where it's nearly drag and drop, with the allowance of pluggable custom code (Javascript for example), and wrap around already existing opensource libraries to create installable apps, ROM formatted, or distribute through WebApp.
 
+All build systems should be available via Docker/Docker-Compose.  None of this "install version x.y.z of this, and ensure that N is configured as such...", if it's not in the Dockerfile, it's not getting into the `main` branch.
+
+That goes with tests as well.  The threshold is flexible, but starting at 80% test coverage.  
+
+The first approach is going to be exposing a single function that takes in a GraphQL request (mutations and queries) and returns a string that can be parsed into JSON.  There are a few reasons for this, but mainly - it creates a clean, single entrypoint API that is manageable, rather than maintaining multiple functions.  If we create linker code to different languages, this reduces that workload (and liability) to a single API.  And GraphQL, like REST-ful API's, are not limited to HTTP uses.
+
 # Legal
 
 We need to ensure that this can be used for fun, and for profit, and do not collide with any Intellectual Property or other Trademark/Copyright licensing.
