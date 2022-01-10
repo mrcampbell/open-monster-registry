@@ -1,4 +1,7 @@
+#[macro_use] extern crate juniper;
+
 mod utils;
+mod graphql;
 
 use wasm_bindgen::prelude::*;
 
@@ -16,4 +19,9 @@ extern {
 #[wasm_bindgen]
 pub fn greet() {
     alert("Hello, engine!");
+}
+
+#[wasm_bindgen]
+pub fn execute(req: String) -> String {
+  graphql::handle_request(&req)
 }
