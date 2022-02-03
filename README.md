@@ -48,3 +48,17 @@ We need to ensure that this can be used for fun, and for profit, and do not coll
 I'm someone who has studied the algorithms, data structures, and built out multiple "Fakemon" games to varying completion and detail in 7-8 languages, and dozens of frameworks.  
 
 And I'm looking forward to figuring this out!
+
+# Basic explanation of where we're at so far: 
+
+Here is a basic explanation:
+
+1. https://github.com/mrcampbell/open-monster-registry/blob/main/compiler/src/main.rs.
+  - This is the compiler that reads the input files, and generates Rust code
+  - Here is actual generated output: https://github.com/mrcampbell/open-monster-registry/blob/main/engine/src/generated/monsters.rs
+  - And the super basic input: https://github.com/mrcampbell/open-monster-registry/blob/main/data/pokemon/species/1.json
+2. The validator (https://github.com/mrcampbell/open-monster-registry/tree/main/validator) probably will be deleted, and I’ll validate at “compile time”
+3. `smoketest` is where I’m actually importing it and implementing it: https://github.com/mrcampbell/open-monster-registry/blob/main/smoketest/index.js
+  - To smoke test, you run this cd smoketest && yarn upgrade omr-engine && yarn start.
+4. And last, but most certainly not least, engine is the only part that is exported: https://github.com/mrcampbell/open-monster-registry/tree/main/engine
+  - Right now, I’m just replicating Pokemon. I’ll build in forking logic if this whimsical project even makes it that far haha
