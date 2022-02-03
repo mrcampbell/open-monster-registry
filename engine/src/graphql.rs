@@ -1,10 +1,10 @@
-use crate::generated::monsters::monster_by_id;
-use crate::types::monster::{Element, Species, Monster, StatGroup, InputMonster, InputStatGroup};
+use crate::generated::monster::species_by_id;
+use crate::types::monster::{Species, Monster};
 use crate::utils;
 // use wasm_bindgen::prelude::*;
 
 // Only needed due to 2018 edition because the macro is not accessible.
-use juniper::{graphql_object, EmptyMutation, EmptySubscription, Variables, FieldError};
+use juniper::{graphql_object, EmptySubscription, Variables, FieldError};
 
 struct Context {
     // Use your real database pool here.
@@ -19,7 +19,7 @@ struct Query;
 #[graphql_object(context = Context)]
 impl Query {
     fn speciesByID(_context: &Context, id: i32) -> Result<Species, FieldError> {
-      match monster_by_id(id) {
+      match species_by_id(id) {
         Ok(m) => Ok(m),
         Err(msg) => panic!("{}", msg)
       }

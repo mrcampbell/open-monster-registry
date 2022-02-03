@@ -1,1 +1,1 @@
-pub mod monsters;
+pub mod monster;

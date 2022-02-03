@@ -33,7 +33,7 @@ fn main() -> Result<()> {
 
     let monster_file_content = generate_monster_file_contents(monsters);
 
-    write_file("../engine/src/generated/monsters.rs", monster_file_content);
+    write_file("../engine/src/generated/monster.rs", monster_file_content);
 
     Ok(())
 }
@@ -76,9 +76,9 @@ fn generate_monster_file_contents(monsters: Vec<Species>) -> String {
     }
 
     format!(
-        r##"use crate::types::monsters::{{Element, Species}};
+        r##"use crate::types::monster::{{Element, Species}};
 
-pub fn monster_by_id(id: i32) -> Result<Species, &'static str> {{
+pub fn species_by_id(id: i32) -> Result<Species, &'static str> {{
     match id {{{}
         _ => Err("No species with id provided"),
     }}
