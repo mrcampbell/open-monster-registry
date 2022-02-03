@@ -30,6 +30,7 @@ pub struct StatGroup {
     pub def: i32,
     pub spec_atk: i32,
     pub spec_def: i32,
+    pub speed: i32,
 }
 
 #[derive(GraphQLInputObject, Serialize, Deserialize, Debug)]
@@ -46,6 +47,7 @@ pub struct Species {
     pub id: i32,
     pub name: String,
     pub elements: Vec<Element>,
+    pub stats: StatGroup,
 }
 
 #[derive(GraphQLObject, Serialize, Deserialize, Debug)]

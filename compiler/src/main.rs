@@ -1,4 +1,4 @@
-use engine::types::monster::Species;
+use engine::types::monster::{Species, StatGroup, Monster};
 use serde_json::{Result, Value};
 use std::{fmt::format, fs, path::Path};
 
@@ -20,7 +20,9 @@ fn main() -> Result<()> {
         id: -1,
         name: "unknown".into(),
         elements: vec![],
+        stats:  StatGroup { hp: 0, atk: 0, def: 0, spec_atk: 0, spec_def: 0, speed: 0 }
     }];
+
     for path in species_filenames {
         let file_path = path.unwrap().path();
         println!("Reading: {}", file_path.display());
@@ -69,14 +71,22 @@ fn generate_monster_file_contents(monsters: Vec<Species>) -> String {
             id: {},
             name: "{}".into(),
             elements: vec![{}],
+            stats: StatGroup {{
+                hp: {},
+                atk: {},
+                def: {},
+                spec_atk: {},
+                spec_def: {},
+                speed: {},
+            }},
         }}),
         "##,
-            match_statement, m.id, m.id, m.name, element_str
+            match_statement, m.id, m.id, m.name, element_str, m.stats.hp, m.stats.atk, m.stats.def, m.stats.spec_atk, m.stats.spec_def, m.stats.speed,
         );
     }
 
     format!(
-        r##"use crate::types::monster::{{Element, Species}};
+        r##"use crate::types::monster::{{Element, Species, StatGroup}};
 
 pub fn species_by_id(id: i32) -> Result<Species, &'static str> {{
     match id {{{}

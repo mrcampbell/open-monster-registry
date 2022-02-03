@@ -1,5 +1,13 @@
 {
   "id": 1,
   "name": "Bulbasaur",
-  "elements": ["Poison", "Grass"]
+  "elements": ["Poison", "Grass"],
+  "stats": {
+    "hp": 45,
+    "atk": 49,
+    "def": 49,
+    "spec_atk": 65,
+    "spec_def": 65,
+    "speed": 45
+  }
 }
