@@ -64,15 +64,13 @@ pub struct Monster {
 
 pub struct InputMonster {
     pub species_id: i32,
-    pub species: Species,
     pub level: i32,
-    pub iv_stats: StatGroup,
-    pub ev_stats: StatGroup,
-    pub stats: StatGroup,
+    pub iv_stats: Option<StatGroup>,
+    pub ev_stats: Option<StatGroup>,
     pub move_1_id: i32,
-    pub move_2_id: i32,
-    pub move_3_id: i32,
-    pub move_4_id: i32,
+    pub move_2_id: Option<i32>,
+    pub move_3_id: Option<i32>,
+    pub move_4_id: Option<i32>,
 }
 
 // impl Monster {

@@ -1,4 +1,4 @@
-use engine::types::monsters::Species;
+use engine::types::monster::Species;
 use serde_json::{Result, Value};
 use std::{fmt::format, fs, path::Path};
 

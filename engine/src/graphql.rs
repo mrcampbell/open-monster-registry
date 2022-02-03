@@ -1,5 +1,5 @@
 use crate::generated::monsters::monster_by_id;
-use crate::types::monsters::{Element, Species, Monster, StatGroup, InputMonster, InputStatGroup};
+use crate::types::monster::{Element, Species, Monster, StatGroup, InputMonster, InputStatGroup};
 use crate::utils;
 // use wasm_bindgen::prelude::*;
 

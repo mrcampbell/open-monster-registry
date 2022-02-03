@@ -1,4 +1,4 @@
-use crate::types::monsters::{Element, Species};
+use crate::types::monster::{Element, Species};
 
 pub fn monster_by_id(id: i32) -> Result<Species, &'static str> {
     match id {

@@ -1,6 +1,6 @@
 extern crate engine;
 
-use engine::types::monsters::Element::{Normal, Water, Dark, Dragon, Fairy, Ghost, Steel, Rock};
+use engine::types::monster::Element::{Normal, Water, Rock, Ghost};
 use engine::calculations::battle::elemental_advantage;
 
 #[test]
