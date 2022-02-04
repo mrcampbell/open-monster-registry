@@ -16,12 +16,17 @@ pub fn inflate_monster(species_id: i32, level: i32, move_1_id: i32, move_2_id: O
   return Ok(Monster { species_id, species, level, iv_stats: iv, ev_stats: ev, stats: todo!(), move_1_id, move_2_id: todo!(), move_3_id: todo!(), move_4_id: todo!() })
 }
 
+// calculated using gen III and onwards
 fn calculate_stat(level: i32, base: i32, iv: i32, ev: i32) -> i32 {
-  return 0
+  let mut stat: i32 = (((2 * base + iv + ev / 4) * level) / 100) + 5;
+  if stat > 255 {
+    stat = 255;
+  }
+  return stat;
 }
 
 fn calculate_hp(level: i32, base: i32, iv: i32, ev: i32) -> i32 {
-  return 0
+  return calculate_stat(level, base, iv, ev) + 5 + level;
 }
 
 #[test]
@@ -54,4 +59,28 @@ fn test_inflate_with_invalid_species_id() {
   let monster = inflate_monster(species_id, level, move_1_id, move_2_id, move_3_id, move_4_id, iv, ev);
 
   assert!(monster.is_err());
+}
+
+#[test]
+fn test_def_stat_calculation() {
+  let level = 78;
+  let base = 95;
+  let iv = 30;
+  let ev = 91;
+
+  let stat = calculate_stat(level, base, iv, ev);
+
+  assert_eq!(stat, 193);
+}
+
+#[test]
+fn test_hp_stat_calculation() {
+  let level = 78;
+  let base = 108;
+  let iv = 24;
+  let ev = 74;
+
+  let stat = calculate_hp(level, base, iv, ev);
+
+  assert_eq!(stat, 289);
 }
