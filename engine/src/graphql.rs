@@ -6,7 +6,7 @@ use crate::utils;
 // Only needed due to 2018 edition because the macro is not accessible.
 use juniper::{graphql_object, EmptySubscription, Variables, FieldError};
 
-struct Context {
+pub struct Context {
     // Use your real database pool here.
 // pool: DatabasePool,
 }
@@ -14,7 +14,7 @@ struct Context {
 impl juniper::Context for Context {}
 extern crate web_sys;
 
-struct Query;
+pub struct Query;
 
 #[graphql_object(context = Context)]
 impl Query {
@@ -26,7 +26,7 @@ impl Query {
     }
 }
 
-struct Mutation;
+pub struct Mutation;
 #[graphql_object(context = Context)]
 impl Mutation {
     fn generate_monster(_context: &Context, species_id: i32, level: i32) -> Result<Monster, FieldError> {
@@ -47,7 +47,12 @@ impl Mutation {
 
 // A root schema consists of a query, a mutation, and a subscription.
 // Request queries can be executed against a RootNode.
-type Schema = juniper::RootNode<'static, Query, Mutation, EmptySubscription<Context>>;
+// pub so it can be used by the `api` crate
+pub type Schema = juniper::RootNode<'static, Query, Mutation, EmptySubscription<Context>>;
+
+pub fn create_schema() -> Schema {
+  Schema::new(Query, Mutation, EmptySubscription::new())
+}
 
 pub fn handle_request(query: &str) -> String {
     utils::set_panic_hook();
@@ -62,7 +67,7 @@ pub fn handle_request(query: &str) -> String {
     let (res, _errors) = juniper::execute_sync(
         query,
         None,
-        &Schema::new(Query, Mutation, EmptySubscription::new()),
+        &create_schema(),
         &Variables::new(),
         &ctx,
     )

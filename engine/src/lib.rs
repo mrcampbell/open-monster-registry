@@ -1,7 +1,7 @@
 #[macro_use] extern crate juniper;
 
 mod utils;
-mod graphql;
+pub mod graphql;
 pub mod types;
 pub mod generated;
 pub mod calculations;
