@@ -57,12 +57,3 @@ async fn main() -> io::Result<()> {
     .run()
     .await
 }
-
-/*
-curl -g \
--X POST \
--H "Content-Type: application/json" \
--d '{"query":"query{speciesByID(id: 1) { name }}"}' \
-http://localhost:8080/graphql
-
-*/

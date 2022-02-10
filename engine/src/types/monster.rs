@@ -75,9 +75,18 @@ pub struct InputMonster {
     pub move_4_id: Option<i32>,
 }
 
-// impl Monster {
-//     fn from_input_value(v: &InputMonster) -> Option<Self> {
-//       // TODO
-//       Some(Monster{ species_id: todo!(), species: todo!(), level: todo!(), iv_stats: todo!(), ev_stats: todo!(), stats: todo!(), move_1_id: todo!(), move_2_id: todo!(), move_3_id: todo!(), move_4_id: todo!() })
-//     }
-// }
+#[derive(Serialize, GraphQLInputObject, Deserialize, Debug)]
+pub struct CalculateOtherStatInput {
+  pub level: i32, 
+  pub base: i32, 
+  pub iv: i32, 
+  pub ev: i32
+}
+
+#[derive(Serialize, GraphQLInputObject, Deserialize, Debug)]
+pub struct CalculateHPStatInput {
+  pub level: i32, 
+  pub base: i32, 
+  pub iv: i32, 
+  pub ev: i32
+}

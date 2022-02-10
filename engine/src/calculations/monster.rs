@@ -62,7 +62,7 @@ pub fn inflate_monster(
 }
 
 // calculated using gen III and onwards
-fn calculate_stat(level: i32, base: i32, iv: i32, ev: i32) -> i32 {
+pub fn calculate_stat(level: i32, base: i32, iv: i32, ev: i32) -> i32 {
     let mut stat: i32 = (((2 * base + iv + ev / 4) * level) / 100) + 5;
     if stat > 255 {
         stat = 255;
@@ -70,8 +70,8 @@ fn calculate_stat(level: i32, base: i32, iv: i32, ev: i32) -> i32 {
     return stat;
 }
 
-fn calculate_hp(level: i32, base: i32, iv: i32, ev: i32) -> i32 {
-    return calculate_stat(level, base, iv, ev) + 5 + level;
+pub fn calculate_hp(level: i32, base: i32, iv: i32, ev: i32) -> i32 {
+    calculate_stat(level, base, iv, ev) + 5 + level
 }
 
 #[test]

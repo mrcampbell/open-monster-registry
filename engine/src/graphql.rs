@@ -1,5 +1,6 @@
+use crate::calculations::monster::{calculate_stat, calculate_hp};
 use crate::generated::monster::species_by_id;
-use crate::types::monster::{Species, Monster};
+use crate::types::monster::{Species, Monster, CalculateOtherStatInput, CalculateHPStatInput};
 use crate::utils;
 // use wasm_bindgen::prelude::*;
 
@@ -23,6 +24,16 @@ impl Query {
         Ok(m) => Ok(m),
         Err(msg) => panic!("{}", msg)
       }
+    }
+
+    fn calculate_other_stat(_context: &Context, input: CalculateOtherStatInput) -> Result<i32, FieldError> {
+      // todo: valdate
+      Ok(calculate_stat(input.level, input.base, input.iv, input.ev))
+    }
+
+    fn calculate_hp_stat(_context: &Context, input: CalculateHPStatInput) -> Result<i32, FieldError> {
+      // todo: validate
+      Ok(calculate_hp(input.level, input.base, input.iv, input.ev))
     }
 }
 
