@@ -1,6 +1,9 @@
 use engine::types::monster::{Species, StatGroup, Monster};
 use serde_json::{Result, Value};
 use std::{fmt::format, fs, path::Path};
+use crate::species_raw_types::{SpeciesRawData};
+
+mod species_raw_types;
 
 fn main() -> Result<()> {
     println!("Reading config...");
@@ -28,9 +31,9 @@ fn main() -> Result<()> {
         println!("Reading: {}", file_path.display());
         let species_contents = read_file(file_path.as_os_str().to_str().unwrap());
         println!("{}", species_contents);
-        let deserialized_monster: Species = serde_json::from_str(&species_contents).unwrap();
+        let deserialized_monster: SpeciesRawData = serde_json::from_str(&species_contents).unwrap();
         println!("Deserialized Monster: {:?}", deserialized_monster);
-        monsters.push(deserialized_monster);
+        // monsters.push(deserialized_monster);
     }
 
     let monster_file_content = generate_monster_file_contents(monsters);
