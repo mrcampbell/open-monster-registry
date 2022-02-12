@@ -81,6 +81,23 @@ pub struct Species {
     pub elements: Vec<Element>,
     pub stats: StatGroup,
 }
+#[derive(GraphQLEnum, Serialize, Deserialize, Debug)]
+pub enum MoveLearnMethod {
+    LevelUp,
+    TM,
+    HM,
+    Tutor,
+    Egg,
+    Special,
+    Other,
+}
+#[derive(GraphQLObject, Serialize, Deserialize, Debug)]
+pub struct SpeciesMoveLearns {
+    pub species_id: i32,
+    pub move_id: i32,
+    pub method: MoveLearnMethod,
+    pub level: Option<i32>,
+}
 
 #[derive(GraphQLObject, Serialize, Deserialize, Debug)]
 pub struct Monster {
