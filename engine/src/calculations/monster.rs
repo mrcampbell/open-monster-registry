@@ -1,4 +1,4 @@
-use crate::generated::monster::species_by_id;
+use crate::generated::species::species_by_id;
 use crate::types::monster::{Monster, StatGroup};
 
 pub fn create_randomized_monster(species_id: i32, level: i32) -> Result<Monster, String> {

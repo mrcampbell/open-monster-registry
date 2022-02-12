@@ -1,5 +1,5 @@
 use crate::calculations::monster::{calculate_stat, calculate_hp};
-use crate::generated::monster::species_by_id;
+use crate::generated::species::species_by_id;
 use crate::types::monster::{Species, Monster, CalculateOtherStatInput, CalculateHPStatInput};
 use crate::utils;
 // use wasm_bindgen::prelude::*;

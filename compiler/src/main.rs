@@ -19,7 +19,7 @@ fn main() -> Result<()> {
 
     let species_filenames = fs::read_dir(species_path).unwrap();
 
-    let mut monsters = vec![Species {
+    let mut species = vec![Species {
         id: -1,
         name: "unknown".into(),
         elements: vec![],
@@ -27,19 +27,27 @@ fn main() -> Result<()> {
     }];
 
     for path in species_filenames {
+        // read file contents
         let file_path = path.unwrap().path();
         println!("Reading: {}", file_path.display());
         let species_contents = read_file(file_path.as_os_str().to_str().unwrap());
         // println!("{}", species_contents);
         let deserialized_monster: SpeciesRawData = serde_json::from_str(&species_contents).unwrap();
         // println!("Deserialized Monster: {:?}", deserialized_monster);
-        let processed_species = process_raw_species(deserialized_monster);
-        monsters.push(processed_species);
+
+        // process species basic data
+        let species_basic_data = process_species_basic_data(deserialized_monster);
+        species.push(species_basic_data);
+
+        // process move learns
+
+
+
     }
 
-    let monster_file_content = generate_monster_file_contents(monsters);
+    let species_file_content = generate_species_file_contents(species);
 
-    write_file("../engine/src/generated/monster.rs", monster_file_content);
+    write_file("../engine/src/generated/species.rs", species_file_content);
 
     Ok(())
 }
@@ -58,7 +66,7 @@ fn str_to_json(str: &str) -> Result<Value> {
     serde_json::from_str(&str)
 }
 
-fn process_raw_species(raw_species: SpeciesRawData) -> Species {
+fn process_species_basic_data(raw_species: SpeciesRawData) -> Species {
     let mut species = Species {
         id: raw_species.id,
         name: raw_species.name,
@@ -80,10 +88,10 @@ fn process_raw_species(raw_species: SpeciesRawData) -> Species {
     species
 }
 
-fn generate_monster_file_contents(monsters: Vec<Species>) -> String {
+fn generate_species_file_contents(species: Vec<Species>) -> String {
     let mut match_statement: String = "".into();
 
-    for m in monsters {
+    for m in species {
         let element_str = m
             .elements
             .iter()
