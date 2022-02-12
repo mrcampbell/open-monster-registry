@@ -15,11 +15,10 @@ pub fn species_by_id(id: i32) -> Result<Species, &'static str> {
                 speed: 0,
             },
         }),
-        
         1 => Ok(Species {
             id: 1,
-            name: "Bulbasaur".into(),
-            elements: vec![Element::Poison, Element::Grass],
+            name: "bulbasaur".into(),
+            elements: vec![Element::Grass, Element::Poison],
             stats: StatGroup {
                 hp: 45,
                 atk: 49,
@@ -29,7 +28,32 @@ pub fn species_by_id(id: i32) -> Result<Species, &'static str> {
                 speed: 45,
             },
         }),
-        
+        2 => Ok(Species {
+            id: 2,
+            name: "ivysaur".into(),
+            elements: vec![Element::Grass, Element::Poison],
+            stats: StatGroup {
+                hp: 60,
+                atk: 62,
+                def: 63,
+                spec_atk: 80,
+                spec_def: 80,
+                speed: 60,
+            },
+        }),
+        4 => Ok(Species {
+            id: 4,
+            name: "charmander".into(),
+            elements: vec![Element::Fire, Element::None],
+            stats: StatGroup {
+                hp: 39,
+                atk: 52,
+                def: 43,
+                spec_atk: 60,
+                spec_def: 50,
+                speed: 65,
+            },
+        }),
         _ => Err("No species with id provided"),
     }
 }

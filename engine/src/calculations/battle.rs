@@ -6,6 +6,7 @@ use crate::types::monster::Element::{
 
 pub fn elemental_advantage(atk_type: Element, def_type: Element) -> f32 {
     match atk_type {
+        Element::None => 1.0,
         Element::Normal => match def_type {
             Rock | Steel => 0.5,
             Ghost => 0.0,

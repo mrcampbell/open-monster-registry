@@ -7,28 +7,28 @@ use serde_json::Value;
 pub struct SpeciesRawData {
     pub abilities: Vec<Ability>,
     #[serde(rename = "base_experience")]
-    pub base_experience: i64,
+    pub base_experience: i32,
     pub forms: Vec<Form>,
     #[serde(rename = "game_indices")]
     pub game_indices: Vec<Index>,
-    pub height: i64,
+    pub height: i32,
     #[serde(rename = "held_items")]
     pub held_items: Vec<Value>,
-    pub id: i64,
+    pub id: i32,
     #[serde(rename = "is_default")]
     pub is_default: bool,
     #[serde(rename = "location_area_encounters")]
     pub location_area_encounters: String,
     pub moves: Vec<Mfe>,
     pub name: String,
-    pub order: i64,
+    pub order: i32,
     #[serde(rename = "past_types")]
     pub past_types: Vec<Value>,
     pub species: Species,
     pub sprites: Sprites,
     pub stats: Vec<Stat>,
     pub types: Vec<Type>,
-    pub weight: i64,
+    pub weight: i32,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -37,7 +37,7 @@ pub struct Ability {
     pub ability: Ability2,
     #[serde(rename = "is_hidden")]
     pub is_hidden: bool,
-    pub slot: i64,
+    pub slot: i32,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -58,7 +58,7 @@ pub struct Form {
 #[serde(rename_all = "camelCase")]
 pub struct Index {
     #[serde(rename = "game_index")]
-    pub game_index: i64,
+    pub game_index: i32,
     pub version: Version,
 }
 
@@ -89,7 +89,7 @@ pub struct Move {
 #[serde(rename_all = "camelCase")]
 pub struct VersionGroupDetail {
     #[serde(rename = "level_learned_at")]
-    pub level_learned_at: i64,
+    pub level_learned_at: i32,
     #[serde(rename = "move_learn_method")]
     pub move_learn_method: MoveLearnMethod,
     #[serde(rename = "version_group")]
@@ -553,8 +553,8 @@ pub struct Icons2 {
 #[serde(rename_all = "camelCase")]
 pub struct Stat {
     #[serde(rename = "base_stat")]
-    pub base_stat: i64,
-    pub effort: i64,
+    pub base_stat: i32,
+    pub effort: i32,
     pub stat: Stat2,
 }
 
@@ -568,7 +568,7 @@ pub struct Stat2 {
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Type {
-    pub slot: i64,
+    pub slot: i32,
     #[serde(rename = "type")]
     pub type_field: Type2,
 }

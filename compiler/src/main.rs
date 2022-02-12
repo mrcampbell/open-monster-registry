@@ -1,4 +1,4 @@
-use engine::types::monster::{Species, StatGroup, Monster};
+use engine::types::monster::{Species, StatGroup, Monster, Element};
 use serde_json::{Result, Value};
 use std::{fmt::format, fs, path::Path};
 use crate::species_raw_types::{SpeciesRawData};
@@ -15,7 +15,7 @@ fn main() -> Result<()> {
 
     let base_path = config["collection_source"].as_str().unwrap();
     let species_path = format!("{}/species", base_path);
-    print!("{}", base_path);
+    // print!("{}", base_path);
 
     let species_filenames = fs::read_dir(species_path).unwrap();
 
@@ -30,10 +30,11 @@ fn main() -> Result<()> {
         let file_path = path.unwrap().path();
         println!("Reading: {}", file_path.display());
         let species_contents = read_file(file_path.as_os_str().to_str().unwrap());
-        println!("{}", species_contents);
+        // println!("{}", species_contents);
         let deserialized_monster: SpeciesRawData = serde_json::from_str(&species_contents).unwrap();
-        println!("Deserialized Monster: {:?}", deserialized_monster);
-        // monsters.push(deserialized_monster);
+        // println!("Deserialized Monster: {:?}", deserialized_monster);
+        let processed_species = process_raw_species(deserialized_monster);
+        monsters.push(processed_species);
     }
 
     let monster_file_content = generate_monster_file_contents(monsters);
@@ -55,6 +56,28 @@ fn write_file(filename: &str, content: String) {
 
 fn str_to_json(str: &str) -> Result<Value> {
     serde_json::from_str(&str)
+}
+
+fn process_raw_species(raw_species: SpeciesRawData) -> Species {
+    let mut species = Species {
+        id: raw_species.id,
+        name: raw_species.name,
+        elements: raw_species.types.iter().map(|x| x.type_field.name.parse().unwrap()).collect(),
+        stats: StatGroup { // todo: search by stat.name, but this is okay for now
+            hp: raw_species.stats[0].base_stat,
+            atk: raw_species.stats[1].base_stat,
+            def: raw_species.stats[2].base_stat,
+            spec_atk: raw_species.stats[3].base_stat,
+            spec_def: raw_species.stats[4].base_stat,
+            speed: raw_species.stats[5].base_stat,
+        }
+    };
+
+    if species.elements.len() == 1 {
+        species.elements.push(Element::None);
+    }
+
+    species
 }
 
 fn generate_monster_file_contents(monsters: Vec<Species>) -> String {
@@ -82,8 +105,7 @@ fn generate_monster_file_contents(monsters: Vec<Species>) -> String {
                 spec_def: {},
                 speed: {},
             }},
-        }}),
-        "##,
+        }}),"##,
             match_statement, m.id, m.id, m.name, element_str, m.stats.hp, m.stats.atk, m.stats.def, m.stats.spec_atk, m.stats.spec_def, m.stats.speed,
         );
     }

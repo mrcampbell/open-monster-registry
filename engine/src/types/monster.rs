@@ -1,8 +1,11 @@
+use std::str::FromStr;
+
 use juniper::GraphQLEnum;
 use serde::{Deserialize, Serialize};
 
 #[derive(GraphQLEnum, Clone, Copy, Serialize, Deserialize, Debug)]
 pub enum Element {
+    None,
     Normal,
     Fire,
     Water,
@@ -21,6 +24,35 @@ pub enum Element {
     Dark,
     Steel,
     Fairy,
+}
+
+impl FromStr for Element {
+    type Err = ();
+
+    fn from_str(input: &str) -> Result<Element, Self::Err> {
+        match input.to_lowercase().as_str() {
+            "none" => Ok(Element::None),
+            "normal" => Ok(Element::Normal),
+            "fire" => Ok(Element::Fire),
+            "water" => Ok(Element::Water),
+            "electric" => Ok(Element::Electric),
+            "grass" => Ok(Element::Grass),
+            "ice" => Ok(Element::Ice),
+            "fighting" => Ok(Element::Fighting),
+            "poison" => Ok(Element::Poison),
+            "ground" => Ok(Element::Ground),
+            "flying" => Ok(Element::Flying),
+            "psychic" => Ok(Element::Psychic),
+            "bug" => Ok(Element::Bug),
+            "rock" => Ok(Element::Rock),
+            "ghost" => Ok(Element::Ghost),
+            "dragon" => Ok(Element::Dragon),
+            "dark" => Ok(Element::Dark),
+            "steel" => Ok(Element::Steel),
+            "fairy" => Ok(Element::Fairy),
+            _ => Err(()),
+        }
+    }
 }
 
 #[derive(GraphQLObject, Serialize, Deserialize, Debug)]
@@ -77,16 +109,16 @@ pub struct InputMonster {
 
 #[derive(Serialize, GraphQLInputObject, Deserialize, Debug)]
 pub struct CalculateOtherStatInput {
-  pub level: i32, 
-  pub base: i32, 
-  pub iv: i32, 
-  pub ev: i32
+    pub level: i32,
+    pub base: i32,
+    pub iv: i32,
+    pub ev: i32,
 }
 
 #[derive(Serialize, GraphQLInputObject, Deserialize, Debug)]
 pub struct CalculateHPStatInput {
-  pub level: i32, 
-  pub base: i32, 
-  pub iv: i32, 
-  pub ev: i32
+    pub level: i32,
+    pub base: i32,
+    pub iv: i32,
+    pub ev: i32,
 }
