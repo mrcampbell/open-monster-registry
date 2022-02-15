@@ -1,12 +1,14 @@
 use std::fs;
 
-use engine::types::monster::{Species, StatGroup, Element, SpeciesMoveLearns, MoveLearnMethod};
+use crate::species_raw_types::SpeciesRawData;
+use engine::types::monster::{Element, MoveLearnMethod, Species, SpeciesMoveLearns, StatGroup};
+use regex::Regex;
 use serde_json::{Result, Value};
-use crate::species_raw_types::{SpeciesRawData};
-use regex::{Regex, Captures};
-
 
 mod species_raw_types;
+
+const ENV_VERSION_GROUP: &str = "red-blue";
+const ENV_LANGUAGE_ID: i32 = 1;
 
 fn main() -> Result<()> {
     println!("Reading config...");
@@ -26,7 +28,14 @@ fn main() -> Result<()> {
         id: -1,
         name: "unknown".into(),
         elements: vec![],
-        stats:  StatGroup { hp: 0, atk: 0, def: 0, spec_atk: 0, spec_def: 0, speed: 0 }
+        stats: StatGroup {
+            hp: 0,
+            atk: 0,
+            def: 0,
+            spec_atk: 0,
+            spec_def: 0,
+            speed: 0,
+        },
     }];
 
     for path in species_filenames {
@@ -40,15 +49,13 @@ fn main() -> Result<()> {
 
         // process species basic data
         let species_basic_data = process_species_basic_data(&deserialized_species);
-        let move_learns = process_species_move_learns(&deserialized_species);
-        
-        print!("{:?}", move_learns);
+        let move_learns = process_species_move_learns(deserialized_species);
 
+        print!("{:?}", move_learns);
 
         species.push(species_basic_data);
 
         // process move learns
-
     }
 
     let species_file_content = generate_species_file_contents(species);
@@ -76,15 +83,20 @@ fn process_species_basic_data(raw_species: &SpeciesRawData) -> Species {
     let mut species = Species {
         id: raw_species.id,
         name: raw_species.name.to_string(),
-        elements: raw_species.types.iter().map(|x| x.type_field.name.parse().unwrap()).collect(),
-        stats: StatGroup { // todo: search by stat.name, but this is okay for now
+        elements: raw_species
+            .types
+            .iter()
+            .map(|x| x.type_field.name.parse().unwrap())
+            .collect(),
+        stats: StatGroup {
+            // todo: search by stat.name, but this is okay for now
             hp: raw_species.stats[0].base_stat,
             atk: raw_species.stats[1].base_stat,
             def: raw_species.stats[2].base_stat,
             spec_atk: raw_species.stats[3].base_stat,
             spec_def: raw_species.stats[4].base_stat,
             speed: raw_species.stats[5].base_stat,
-        }
+        },
     };
 
     if species.elements.len() == 1 {
@@ -94,34 +106,55 @@ fn process_species_basic_data(raw_species: &SpeciesRawData) -> Species {
     species
 }
 
+fn process_species_move_learns(raw_species: SpeciesRawData) -> Vec<SpeciesMoveLearns> {
+    // todo: how to move this outside of function?
+    let move_url_regex: regex::Regex = Regex::new(r"move/(.*)/").unwrap();
 
-fn process_species_move_learns(raw_species: &SpeciesRawData) -> Vec<SpeciesMoveLearns> {
+    // todo: yo wtf is this?
+    let caps = move_url_regex.captures(&raw_species.moves[0].move_field.url);
+    let move_id = caps
+        .unwrap()
+        .get(1)
+        .unwrap()
+        .as_str()
+        .parse::<i32>()
+        .unwrap();
 
-  // todo: how to move this outside of function?
-  let move_url_regex: regex::Regex = Regex::new(r"move/(.*)/").unwrap();
-
-  // todo: yo wtf is this?
-  let caps = move_url_regex.captures(&raw_species.moves[0].move_field.url);
-  let move_id = caps.unwrap().get(1).unwrap().as_str().parse::<i32>().unwrap();
-
-  // let move_ids = vec![];
-  // let move_ids: Vec<i32> = move_url_regex.captures_iter(&raw_species.moves[0].move_field.url).map(|m: Captures| m.get(1).unwrap().as_str().parse::<i32>().unwrap()).collect();
-
-  raw_species.moves.iter().map(|x| SpeciesMoveLearns {
-      species_id: raw_species.id,
-      move_id: move_id,
-      method: match x.version_group_details[0].move_learn_method.name.as_str() {
-                "level-up" => MoveLearnMethod::LevelUp,
-                "tutor" => MoveLearnMethod::Tutor,
-                "egg" => MoveLearnMethod::Egg,
-                "machine" => MoveLearnMethod::TM,
-                "special" => MoveLearnMethod::Special,
-                _ => panic!("Unknown move learn method")
-            },
-      level: (x.version_group_details[0].level_learned_at).into(),
-  }).collect()
+    raw_species
+        .moves
+        .iter()
+        .map(|x| {
+            match x
+                .clone() // todo: hack to avoid shared reference
+                .version_group_details
+                .into_iter()
+                .find(|x| x.version_group.name == ENV_VERSION_GROUP)
+            {
+                Some(vgDetail) => SpeciesMoveLearns {
+                    species_id: raw_species.id,
+                    move_id: move_id,
+                    // todo: filter based off of version group
+                    method: match vgDetail.move_learn_method.name.as_str() {
+                        "level-up" => MoveLearnMethod::LevelUp,
+                        "tutor" => MoveLearnMethod::Tutor,
+                        "egg" => MoveLearnMethod::Egg,
+                        "machine" => MoveLearnMethod::TM,
+                        "special" => MoveLearnMethod::Special,
+                        _ => panic!("Unknown move learn method"),
+                    },
+                    level: (vgDetail.level_learned_at).into(),
+                },
+                None => SpeciesMoveLearns {
+                    species_id: 0,
+                    move_id: -1,
+                    method: MoveLearnMethod::LevelUp,
+                    level: Some(-1),
+                },
+            }
+        })
+        .filter(|x| x.move_id > 0)
+        .collect()
 }
-
 
 fn generate_species_file_contents(species: Vec<Species>) -> String {
     let mut match_statement: String = "".into();
@@ -149,7 +182,17 @@ fn generate_species_file_contents(species: Vec<Species>) -> String {
                 speed: {},
             }},
         }}),"##,
-            match_statement, m.id, m.id, m.name, element_str, m.stats.hp, m.stats.atk, m.stats.def, m.stats.spec_atk, m.stats.spec_def, m.stats.speed,
+            match_statement,
+            m.id,
+            m.id,
+            m.name,
+            element_str,
+            m.stats.hp,
+            m.stats.atk,
+            m.stats.def,
+            m.stats.spec_atk,
+            m.stats.spec_def,
+            m.stats.speed,
         );
     }
 
