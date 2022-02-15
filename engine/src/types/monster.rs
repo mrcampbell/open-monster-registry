@@ -92,7 +92,7 @@ pub enum MoveLearnMethod {
     Other,
 }
 #[derive(GraphQLObject, Serialize, Deserialize, Debug)]
-pub struct SpeciesMoveLearns {
+pub struct SpeciesMoveLearn {
     pub species_id: i32,
     pub move_id: i32,
     pub method: MoveLearnMethod,

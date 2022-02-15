@@ -1,7 +1,7 @@
 use std::fs;
 
 use crate::species_raw_types::SpeciesRawData;
-use engine::types::monster::{Element, MoveLearnMethod, Species, SpeciesMoveLearns, StatGroup};
+use engine::types::monster::{Element, MoveLearnMethod, Species, SpeciesMoveLearn, StatGroup};
 use regex::Regex;
 use serde_json::{Result, Value};
 
@@ -38,6 +38,8 @@ fn main() -> Result<()> {
         },
     }];
 
+    let mut move_learns: Vec<Vec<SpeciesMoveLearn>> = vec![];
+
     for path in species_filenames {
         // read file contents
         let file_path = path.unwrap().path();
@@ -49,11 +51,12 @@ fn main() -> Result<()> {
 
         // process species basic data
         let species_basic_data = process_species_basic_data(&deserialized_species);
-        let move_learns = process_species_move_learns(deserialized_species);
+        let species_move_learns = process_species_move_learns(deserialized_species);
 
-        print!("{:?}", move_learns);
+        print!("{:?}", species_move_learns);
 
         species.push(species_basic_data);
+        move_learns.push(species_move_learns);
 
         // process move learns
     }
@@ -61,6 +64,10 @@ fn main() -> Result<()> {
     let species_file_content = generate_species_file_contents(species);
 
     write_file("../engine/src/generated/species.rs", species_file_content);
+    write_file(
+        "../engine/src/generated/move_learns.rs",
+        move_learns_file_content(move_learns),
+    );
 
     Ok(())
 }
@@ -106,7 +113,7 @@ fn process_species_basic_data(raw_species: &SpeciesRawData) -> Species {
     species
 }
 
-fn process_species_move_learns(raw_species: SpeciesRawData) -> Vec<SpeciesMoveLearns> {
+fn process_species_move_learns(raw_species: SpeciesRawData) -> Vec<SpeciesMoveLearn> {
     // todo: how to move this outside of function?
     let move_url_regex: regex::Regex = Regex::new(r"move/(.*)/").unwrap();
 
@@ -130,11 +137,11 @@ fn process_species_move_learns(raw_species: SpeciesRawData) -> Vec<SpeciesMoveLe
                 .into_iter()
                 .find(|x| x.version_group.name == ENV_VERSION_GROUP)
             {
-                Some(vgDetail) => SpeciesMoveLearns {
+                Some(vg_detail) => SpeciesMoveLearn {
                     species_id: raw_species.id,
                     move_id: move_id,
                     // todo: filter based off of version group
-                    method: match vgDetail.move_learn_method.name.as_str() {
+                    method: match vg_detail.move_learn_method.name.as_str() {
                         "level-up" => MoveLearnMethod::LevelUp,
                         "tutor" => MoveLearnMethod::Tutor,
                         "egg" => MoveLearnMethod::Egg,
@@ -142,9 +149,9 @@ fn process_species_move_learns(raw_species: SpeciesRawData) -> Vec<SpeciesMoveLe
                         "special" => MoveLearnMethod::Special,
                         _ => panic!("Unknown move learn method"),
                     },
-                    level: (vgDetail.level_learned_at).into(),
+                    level: (vg_detail.level_learned_at).into(),
                 },
-                None => SpeciesMoveLearns {
+                None => SpeciesMoveLearn {
                     species_id: 0,
                     move_id: -1,
                     method: MoveLearnMethod::LevelUp,
@@ -206,6 +213,64 @@ pub fn species_by_id(id: i32) -> Result<Species, &'static str> {{
 }}
   
   "##,
+        match_statement
+    )
+    .into()
+}
+
+fn move_learns_file_content(move_learns: Vec<Vec<SpeciesMoveLearn>>) -> String {
+    let mut match_statement: String = "".into();
+
+    for ml in move_learns {
+        fn method_to_str(method: &MoveLearnMethod) -> String {
+            match method {
+                MoveLearnMethod::LevelUp => "MoveLearnMethod::LevelUp".to_string(),
+                MoveLearnMethod::Tutor => "MoveLearnMethod::Tutor".to_string(),
+                MoveLearnMethod::Egg => "MoveLearnMethod::Egg".to_string(),
+                MoveLearnMethod::TM => "MoveLearnMethod::TM".to_string(),
+                MoveLearnMethod::HM => "MoveLearnMethod::HM".to_string(),
+                MoveLearnMethod::Special => "MoveLearnMethod::Special".to_string(),
+                MoveLearnMethod::Other => "MoveLearnMethod::Other".to_string(),
+                _ => panic!("Unknown move learn method"),
+            }
+        }
+
+        fn level_to_str(level: Option<i32>) -> String {
+            match level {
+                Some(level) => format!("Some({})", level),
+                None => "None".into(),
+            }
+        }
+
+        match_statement = format!(
+            r##"{}
+    {} => Ok(vec![{}]),"##,
+            match_statement,
+            ml[0].species_id,
+            ml.iter()
+                .map(|m| {
+                    format!(
+                        "SpeciesMoveLearn {{\tspecies_id: {},\tmove_id: {},\tmethod: {},\tlevel: {}}}",
+                        m.species_id,
+                        m.move_id,
+                        method_to_str(&m.method),
+                        level_to_str(m.level)
+                    )
+                })
+                .collect::<Vec<String>>()
+                .join(", ")
+        )
+    }
+
+    format!(
+        r##"
+    use crate::types::monster::{{SpeciesMoveLearn, MoveLearnMethod}};
+
+    pub fn move_learns_by_species_id(id: i32) -> Result<Vec<SpeciesMoveLearn>, &'static str> {{
+              match id {{{}
+            _ => Err("No species with id provided"),
+        }}
+    }}"##,
         match_statement
     )
     .into()
