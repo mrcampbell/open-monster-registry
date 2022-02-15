@@ -244,7 +244,7 @@ fn move_learns_file_content(move_learns: Vec<Vec<SpeciesMoveLearn>>) -> String {
 
         match_statement = format!(
             r##"{}
-    {} => Ok(vec![{}]),"##,
+    {} => vec![{}],"##,
             match_statement,
             ml[0].species_id,
             ml.iter()
@@ -266,9 +266,9 @@ fn move_learns_file_content(move_learns: Vec<Vec<SpeciesMoveLearn>>) -> String {
         r##"
     use crate::types::monster::{{SpeciesMoveLearn, MoveLearnMethod}};
 
-    pub fn move_learns_by_species_id(id: i32) -> Result<Vec<SpeciesMoveLearn>, &'static str> {{
+    pub fn move_learns_by_species_id(id: i32) -> Vec<SpeciesMoveLearn> {{
               match id {{{}
-            _ => Err("No species with id provided"),
+              _ => vec![],
         }}
     }}"##,
         match_statement

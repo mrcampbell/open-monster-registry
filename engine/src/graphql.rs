@@ -19,7 +19,7 @@ pub struct Query;
 
 #[graphql_object(context = Context)]
 impl Query {
-    fn speciesByID(_context: &Context, id: i32) -> Result<Species, FieldError> {
+    fn species_by_id(_context: &Context, id: i32) -> Result<Species, FieldError> {
       match species_by_id(id) {
         Ok(m) => Ok(m),
         Err(msg) => panic!("{}", msg)

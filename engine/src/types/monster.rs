@@ -3,6 +3,8 @@ use std::str::FromStr;
 use juniper::GraphQLEnum;
 use serde::{Deserialize, Serialize};
 
+use crate::generated::move_learns::move_learns_by_species_id;
+
 #[derive(GraphQLEnum, Clone, Copy, Serialize, Deserialize, Debug)]
 pub enum Element {
     None,
@@ -74,13 +76,37 @@ pub struct InputStatGroup {
     pub spec_def: i32,
 }
 
-#[derive(GraphQLObject, Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Species {
     pub id: i32,
     pub name: String,
     pub elements: Vec<Element>,
     pub stats: StatGroup,
 }
+
+#[graphql_object]
+impl Species {
+    fn id(&self) -> i32 {
+        self.id
+    }
+
+    fn name(&self) -> &str {
+        &self.name
+    }
+
+    fn elements(&self) -> &Vec<Element> {
+        &self.elements
+    }
+
+    fn stats(&self) -> &StatGroup {
+        &self.stats
+    }
+
+    fn moves(&self) -> Vec<SpeciesMoveLearn> {
+        move_learns_by_species_id(self.id)
+    }
+}
+
 #[derive(GraphQLEnum, Serialize, Deserialize, Debug)]
 pub enum MoveLearnMethod {
     LevelUp,
@@ -93,6 +119,7 @@ pub enum MoveLearnMethod {
 }
 #[derive(GraphQLObject, Serialize, Deserialize, Debug)]
 pub struct SpeciesMoveLearn {
+    // #[graphql(ignore)]
     pub species_id: i32,
     pub move_id: i32,
     pub method: MoveLearnMethod,
